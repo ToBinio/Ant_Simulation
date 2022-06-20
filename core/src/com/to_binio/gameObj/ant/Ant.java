@@ -35,6 +35,7 @@ public class Ant extends GameObj {
     private boolean hasFood;
 
     private float speed;
+    private float goalSpeed;
 
     private float lastPheromonSpawn = 0;
 
@@ -133,9 +134,15 @@ public class Ant extends GameObj {
         goalDir = (goalDir + 360) % 360;
 
         float dirDifference = goalDir - dir;
-//
-//        speed += (MAX_SPEED * (-(Math.abs(dirDifference) / 1000) + 0.02f)) / 2;
-//        speed = MathUtils.clamp(speed, MAX_SPEED * 0.3f, MAX_SPEED);
+
+        goalSpeed = (MAX_SPEED * (((-(dirDifference * dirDifference)) / 20_000) + 1));
+        goalSpeed = Math.max(0, goalSpeed);
+
+        if (goalSpeed > speed) {
+            speed += (goalSpeed - speed) * 0.1;
+        } else {
+            speed -= (speed - goalSpeed) * 0.2;
+        }
 
         dir += ((dirDifference + 360 + 180) % 360 - 180) / 20;
     }
@@ -152,8 +159,6 @@ public class Ant extends GameObj {
                 hasFood = false;
 
                 goalDir += 180;
-
-                Map.nest.spawnAnt();
             }
         }
     }

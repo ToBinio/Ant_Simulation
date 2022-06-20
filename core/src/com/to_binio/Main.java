@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.to_binio.gameObj.Food;
 
 public class Main extends ApplicationAdapter {
     private SpriteBatch spriteBatch;
@@ -37,12 +36,12 @@ public class Main extends ApplicationAdapter {
 
         sprite = new Sprite(img);
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 50; i++) {
             Map.nest.spawnAnt();
         }
 
         for (int i = 0; i < 5; i++) {
-        Map.spawnRandomFoodCluster();
+            Map.spawnRandomFoodCluster();
         }
     }
 

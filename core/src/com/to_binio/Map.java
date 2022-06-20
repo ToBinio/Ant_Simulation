@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.to_binio.gameObj.Food;
+import com.to_binio.gameObj.GameObj;
 import com.to_binio.gameObj.Nest;
 import com.to_binio.gameObj.ant.Ant;
 import com.to_binio.gameObj.ant.pheromon.Pheromon;
@@ -82,9 +83,19 @@ public class Map {
 
         for (Pheromon pheromon : pheromonsToAdd) {
             if (pheromon.type == PheromonType.FOOD_PATH) {
-                foodPheromons.add(pheromon);
+                Pheromon nearestPheromon = getNearestPheromonInDistance(pheromon.getLocation().x, pheromon.getLocation().y, 0.7f, PheromonType.FOOD_PATH);
+                if (nearestPheromon != null) {
+                    nearestPheromon.addPheromon(pheromon);
+                } else {
+                    foodPheromons.add(pheromon);
+                }
             } else {
-                homePheromons.add(pheromon);
+                Pheromon nearestPheromon = getNearestPheromonInDistance(pheromon.getLocation().x, pheromon.getLocation().y, 0.7f, PheromonType.HOME_PATH);
+                if (nearestPheromon != null) {
+                    nearestPheromon.addPheromon(pheromon);
+                } else {
+                    homePheromons.add(pheromon);
+                }
             }
         }
         pheromonsToAdd.clear();
@@ -149,22 +160,39 @@ public class Map {
         shapeRenderer.end();
     }
 
-
-    public static Food getNearestFoodInFOV(Ant ant) {
-
+    public static <T extends GameObj> T getNearestGameObjInDistance(float x, float y, float range, List<T> gameObjs) {
         float nearestLength = -1;
-        Food nearestFood = null;
+        T nearestGameObj = null;
 
-        for (Food food : foods) {
-            float distanceToFood = Maths.isPointInCircleSection(ant.getLocation(), food.getLocation(), Ant.VIEWING_DISTANCE, ant.getDir(), Ant.VIEWiNG_ANGLE / 2f);
+        for (T gameObj : gameObjs) {
+            float distanceToFood = Vector2.dst(gameObj.getLocation().x, gameObj.getLocation().y, x, y);
 
-            if (distanceToFood >= 0 && (nearestLength == -1 || distanceToFood < nearestLength)) {
+            if (distanceToFood < range && (nearestLength == -1 || distanceToFood < nearestLength)) {
                 nearestLength = distanceToFood;
-                nearestFood = food;
+                nearestGameObj = gameObj;
             }
         }
 
-        return nearestFood;
+        return nearestGameObj;
+    }
+
+    public static Food getNearestFoodInDistance(float x, float y, float range) {
+        return getNearestGameObjInDistance(x, y, range, foods);
+    }
+
+    public static Food getNearestFoodInFOV(Ant ant) {
+
+        Food nearestFood = getNearestFoodInDistance(ant.getLocation().x, ant.getLocation().y, Ant.VIEWING_DISTANCE);
+
+        if (nearestFood != null && Maths.isPointInFOV(ant.getLocation(), nearestFood.getLocation(), ant.getDir(), Ant.VIEWiNG_ANGLE / 2f)) {
+            return nearestFood;
+        } else {
+            return null;
+        }
+    }
+
+    public static Pheromon getNearestPheromonInDistance(float x, float y, float range, PheromonType type) {
+        return getNearestGameObjInDistance(x, y, range, type == PheromonType.FOOD_PATH ? foodPheromons : homePheromons);
     }
 
     public static float sumOfPheromons(PheromonType pheromonType, float x, float y, float range) {
@@ -185,7 +213,7 @@ public class Map {
         float y = (float) (Math.random() * Main.GAME_HEIGHT - Main.GAME_HEIGHT / 2f);
 
         for (int i = 0; i < 200; i++) {
-            Map.addFood(new Food((float) (Math.random() * 20) + x -10, (float) (Math.random() * 20) + y -10));
+            Map.addFood(new Food((float) (Math.random() * 20) + x - 10, (float) (Math.random() * 20) + y - 10));
         }
     }
 }

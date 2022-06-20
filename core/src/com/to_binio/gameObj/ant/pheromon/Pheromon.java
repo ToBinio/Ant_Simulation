@@ -42,4 +42,8 @@ public class Pheromon extends GameObj {
     public void render(ShapeRenderer renderer) {
         renderer.circle(location.x, location.y, strength / 2, 8);
     }
+
+    public void addPheromon(Pheromon pheromon) {
+        strength += pheromon.getStrength();
+    }
 }
