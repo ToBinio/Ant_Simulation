@@ -133,9 +133,9 @@ public class Ant extends GameObj {
         goalDir = (goalDir + 360) % 360;
 
         float dirDifference = goalDir - dir;
-
-        speed += (MAX_SPEED * (-(Math.abs(dirDifference) / 1000) + 0.02f)) / 2;
-        speed = MathUtils.clamp(speed, MAX_SPEED * 0.3f, MAX_SPEED);
+//
+//        speed += (MAX_SPEED * (-(Math.abs(dirDifference) / 1000) + 0.02f)) / 2;
+//        speed = MathUtils.clamp(speed, MAX_SPEED * 0.3f, MAX_SPEED);
 
         dir += ((dirDifference + 360 + 180) % 360 - 180) / 20;
     }
@@ -153,8 +153,7 @@ public class Ant extends GameObj {
 
                 goalDir += 180;
 
-
-//                Map.nest.spawnAnt();
+                Map.nest.spawnAnt();
             }
         }
     }

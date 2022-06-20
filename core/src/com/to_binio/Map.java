@@ -179,4 +179,13 @@ public class Map {
 
         return sum;
     }
+
+    public static void spawnRandomFoodCluster() {
+        float x = (float) (Math.random() * Main.GAME_WIDTH - Main.GAME_WIDTH / 2f);
+        float y = (float) (Math.random() * Main.GAME_HEIGHT - Main.GAME_HEIGHT / 2f);
+
+        for (int i = 0; i < 200; i++) {
+            Map.addFood(new Food((float) (Math.random() * 20) + x -10, (float) (Math.random() * 20) + y -10));
+        }
+    }
 }

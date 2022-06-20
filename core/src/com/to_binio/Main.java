@@ -37,15 +37,12 @@ public class Main extends ApplicationAdapter {
 
         sprite = new Sprite(img);
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 20; i++) {
             Map.nest.spawnAnt();
         }
 
-        for (int i = 0; i < 200; i++) {
-//            Map.addFood(new Food((float) (Math.random() * GAME_WIDTH - GAME_WIDTH / 2f), (float) (Math.random() * GAME_HEIGHT - GAME_HEIGHT / 2)));
-            Map.addFood(new Food((float) (Math.random() * 20) + 50, (float) (Math.random() * 20) + 50));
-            Map.addFood(new Food((float) (Math.random() * 20) - 70, (float) (Math.random() * 20) + 20));
-            Map.addFood(new Food((float) (Math.random() * 20) + 25, (float) (Math.random() * 20) - 10));
+        for (int i = 0; i < 5; i++) {
+        Map.spawnRandomFoodCluster();
         }
     }
 
