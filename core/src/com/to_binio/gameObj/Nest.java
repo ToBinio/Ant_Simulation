@@ -12,14 +12,14 @@ import com.to_binio.gameObj.ant.Ant;
 
 public class Nest extends GameObj {
 
-    public static final float SIZE = 3;
+    public static final float SIZE = 9;
 
     public Nest(float x, float y) {
         super(x, y);
     }
 
     public void render(ShapeRenderer renderer) {
-        renderer.circle(location.x, location.y, SIZE, 8);
+        renderer.circle(location.x, location.y, SIZE, 16);
     }
 
     public void spawnAnt() {

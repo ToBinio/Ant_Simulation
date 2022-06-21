@@ -23,11 +23,17 @@ import com.to_binio.gameObj.ant.pheromon.PheromonType;
 public class Ant extends GameObj {
 
     public static final float MAX_SPEED = 0.3f;
+    public static final float MAX_TURNING_SPEED = 15;
+
     public static final float WANDERING_STRENGTH = 5;
     public static final float VIEWING_DISTANCE = 15;
     public static final float VIEWiNG_ANGLE = 120;
     public static final float PICK_UP_RADIUS = 2;
-    public static final float PHEROMON_SPAWN_FRENZY = 0.2f;
+
+    public static final float PHEROMON_SPAWN_FRENZY = 0.3f;
+    public static final float PHEROMON_TIME_TO_SPAWN = 8;
+    public static final int PHEROMON_MAX_TO_SPAWN = (int) (PHEROMON_TIME_TO_SPAWN * (60 * PHEROMON_SPAWN_FRENZY));
+
 
     private float dir;
     private float goalDir;
@@ -35,11 +41,10 @@ public class Ant extends GameObj {
     private boolean hasFood;
 
     private float speed;
-    private float goalSpeed;
 
-    private float lastPheromonSpawn = 0;
+    private int lastPheromonSpawn = 0;
 
-    private float pheromonSwitchTime = -1;
+    private int pheromonsToSpawnCount = PHEROMON_MAX_TO_SPAWN;
 
     private final Sensor sensorUp;
     private final Sensor sensorLeft;
@@ -64,18 +69,16 @@ public class Ant extends GameObj {
         // spawn Pheromon
         //[>-------------------
 
-        if (pheromonSwitchTime == -1) pheromonSwitchTime = System.nanoTime();
+        lastPheromonSpawn++;
 
-        lastPheromonSpawn += Gdx.graphics.getDeltaTime();
+        if (lastPheromonSpawn >= 60 * PHEROMON_SPAWN_FRENZY) {
+            lastPheromonSpawn -= 60 * PHEROMON_SPAWN_FRENZY ;
 
-        if (lastPheromonSpawn >= PHEROMON_SPAWN_FRENZY) {
-            lastPheromonSpawn -= PHEROMON_SPAWN_FRENZY;
+            pheromonsToSpawnCount--;
 
-            float timeSinceLastPheromonSwitch = (System.nanoTime() - pheromonSwitchTime) / 1_000_000_000f;
+            float strength = (float) pheromonsToSpawnCount / PHEROMON_MAX_TO_SPAWN;
 
-            float strength = 1 / ((timeSinceLastPheromonSwitch / 5) + 1);
-
-            if (strength > 0.4)
+            if (strength > 0.2)
                 Map.addPheromon(new Pheromon(location.x, location.y, hasFood ? PheromonType.FOOD_PATH : PheromonType.HOME_PATH, strength));
         }
 
@@ -92,9 +95,9 @@ public class Ant extends GameObj {
         sensorRight.reSumOfPheromons(hasFood ? PheromonType.HOME_PATH : PheromonType.FOOD_PATH);
 
         if (sensorLeft.getSum() > sensorUp.getSum() && sensorLeft.getSum() > sensorRight.getSum()) {
-            goalDir += -10;
+            goalDir += -MAX_TURNING_SPEED;
         } else if (sensorRight.getSum() > sensorUp.getSum()) {
-            goalDir += 10;
+            goalDir += MAX_TURNING_SPEED;
         }
 
         //[>-------------------
@@ -135,7 +138,7 @@ public class Ant extends GameObj {
 
         float dirDifference = goalDir - dir;
 
-        goalSpeed = (MAX_SPEED * (((-(dirDifference * dirDifference)) / 20_000) + 1));
+        float goalSpeed = (MAX_SPEED * (((-(dirDifference * dirDifference)) / 20_000) + 1));
         goalSpeed = Math.max(0, goalSpeed);
 
         if (goalSpeed > speed) {
@@ -154,7 +157,7 @@ public class Ant extends GameObj {
             lookAt(Map.nest.getLocation());
 
             if (dst < PICK_UP_RADIUS + Nest.SIZE) {
-                pheromonSwitchTime = System.nanoTime();
+                pheromonsToSpawnCount = PHEROMON_MAX_TO_SPAWN;
 
                 hasFood = false;
 
@@ -169,7 +172,7 @@ public class Ant extends GameObj {
         nearestFood = Map.getNearestFoodInFOV(this);
         float dstToNest = Vector2.dst(Map.nest.getLocation().x, Map.nest.getLocation().y, location.x, location.y);
 
-        if (dstToNest < VIEWING_DISTANCE + Nest.SIZE) pheromonSwitchTime = System.nanoTime();
+        if (dstToNest < VIEWING_DISTANCE + Nest.SIZE) pheromonsToSpawnCount = PHEROMON_MAX_TO_SPAWN;
 
         if (nearestFood != null) {
 
@@ -177,7 +180,7 @@ public class Ant extends GameObj {
 
             if (Vector2.dst(nearestFood.getLocation().x, nearestFood.getLocation().y, location.x, location.y) < PICK_UP_RADIUS) {
 
-                pheromonSwitchTime = System.nanoTime();
+                pheromonsToSpawnCount = PHEROMON_MAX_TO_SPAWN;
 
                 hasFood = true;
                 Map.removeFood(nearestFood);

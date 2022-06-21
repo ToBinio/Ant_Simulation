@@ -11,28 +11,24 @@ import com.to_binio.gameObj.GameObj;
  */
 
 public class Pheromon extends GameObj {
-
     public final PheromonType type;
 
     private float strength;
-    private final float beginningStrength;
     private long spawnTime = -1;
 
     public Pheromon(float x, float y, PheromonType type, float strength) {
         super(x, y);
 
         this.type = type;
-        this.beginningStrength = strength;
+        this.strength = strength;
     }
 
     public void update() {
         if (spawnTime == -1) spawnTime = System.nanoTime();
 
-        float timeSinceSpawn = (System.nanoTime() - spawnTime) / 1_000_000_000f;
+        strength -= 0.0008;
 
-        strength = beginningStrength * (0.5f / (timeSinceSpawn / 5 + 0.5f));
-
-        if (strength <= 0.05) Map.removePheromon(this);
+        if (strength <= 0.1) Map.removePheromon(this);
     }
 
     public float getStrength() {
@@ -44,6 +40,6 @@ public class Pheromon extends GameObj {
     }
 
     public void addPheromon(Pheromon pheromon) {
-        strength += pheromon.getStrength();
+        strength += pheromon.getStrength() * Math.pow(strength + 0.5f, -0.9f);
     }
 }

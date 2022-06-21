@@ -20,8 +20,8 @@ public class Main extends ApplicationAdapter {
     private Viewport viewport;
     private OrthographicCamera camera;
 
-    public static final int GAME_WIDTH = 160 * 2;
-    public static final int GAME_HEIGHT = 90 * 2;
+    public static final int GAME_WIDTH = 160 * 3;
+    public static final int GAME_HEIGHT = 90 * 3;
 
     @Override
     public void create() {
@@ -36,7 +36,7 @@ public class Main extends ApplicationAdapter {
 
         sprite = new Sprite(img);
 
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 200; i++) {
             Map.nest.spawnAnt();
         }
 
@@ -52,7 +52,7 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void render() {
-        Gdx.gl.glClearColor(0.15f, 0.1f, 0.2f, 1);
+        Gdx.gl.glClearColor(222 / 255f, 184 / 255f, 135 / 255f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         Map.update();

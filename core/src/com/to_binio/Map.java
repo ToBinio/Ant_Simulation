@@ -83,7 +83,7 @@ public class Map {
 
         for (Pheromon pheromon : pheromonsToAdd) {
             if (pheromon.type == PheromonType.FOOD_PATH) {
-                Pheromon nearestPheromon = getNearestPheromonInDistance(pheromon.getLocation().x, pheromon.getLocation().y, 0.7f, PheromonType.FOOD_PATH);
+                Pheromon nearestPheromon = getNearestPheromonInDistance(pheromon.getLocation().x, pheromon.getLocation().y, 0.2f, PheromonType.FOOD_PATH);
                 if (nearestPheromon != null) {
                     nearestPheromon.addPheromon(pheromon);
                 } else {
@@ -212,7 +212,7 @@ public class Map {
         float x = (float) (Math.random() * Main.GAME_WIDTH - Main.GAME_WIDTH / 2f);
         float y = (float) (Math.random() * Main.GAME_HEIGHT - Main.GAME_HEIGHT / 2f);
 
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 500; i++) {
             Map.addFood(new Food((float) (Math.random() * 20) + x - 10, (float) (Math.random() * 20) + y - 10));
         }
     }
