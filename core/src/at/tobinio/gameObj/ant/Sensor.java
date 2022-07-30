@@ -1,9 +1,9 @@
-package com.to_binio.gameObj.ant;
+package at.tobinio.gameObj.ant;
 
+import at.tobinio.Variables;
+import at.tobinio.gameObj.GameObj;
+import at.tobinio.gameObj.ant.pheromon.PheromonType;
 import com.badlogic.gdx.math.MathUtils;
-import com.to_binio.Map;
-import com.to_binio.gameObj.GameObj;
-import com.to_binio.gameObj.ant.pheromon.PheromonType;
 
 /**
  * Created: 19.06.2022
@@ -12,9 +12,6 @@ import com.to_binio.gameObj.ant.pheromon.PheromonType;
  */
 
 public class Sensor extends GameObj {
-
-    private static final float DISTANCE_TO_ANT = Ant.VIEWING_DISTANCE / 2f;
-    private static final float RANGE = Ant.VIEWING_DISTANCE / 2f;
 
     public final Ant ant;
     public final float angle;
@@ -31,12 +28,12 @@ public class Sensor extends GameObj {
     public void rePosition() {
         float realAngle = ant.getDir() + angle;
 
-        location.x = MathUtils.cosDeg(realAngle) * DISTANCE_TO_ANT + ant.getLocation().x;
-        location.y = MathUtils.sinDeg(realAngle) * DISTANCE_TO_ANT + ant.getLocation().y;
+        location.x = MathUtils.cosDeg(realAngle) * Variables.Ant.Sensor.DISTANCE_TO_ANT + ant.getLocation().x;
+        location.y = MathUtils.sinDeg(realAngle) * Variables.Ant.Sensor.DISTANCE_TO_ANT + ant.getLocation().y;
     }
 
     public void reSumOfPheromons(PheromonType pheromonType) {
-        sum = Map.sumOfPheromons(pheromonType, location.x, location.y, RANGE);
+        sum = ant.getColony().sumOfPheromons(pheromonType, location.x, location.y, Variables.Ant.Sensor.RANGE);
     }
 
     public float getSum() {

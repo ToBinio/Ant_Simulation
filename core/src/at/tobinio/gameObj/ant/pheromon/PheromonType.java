@@ -1,4 +1,4 @@
-package com.to_binio.gameObj.ant.pheromon;
+package at.tobinio.gameObj.ant.pheromon;
 
 /**
  * Created: 19.06.2022
