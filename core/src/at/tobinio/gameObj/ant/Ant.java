@@ -7,11 +7,11 @@ import at.tobinio.gameObj.ant.pheromon.Pheromon;
 import at.tobinio.gameObj.ant.pheromon.PheromonType;
 import at.tobinio.map.Colony;
 import at.tobinio.map.Map;
-import at.tobinio.utils.Maths;
+import at.tobinio.ray.RayCast;
+import at.tobinio.util.Vec2;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
@@ -78,15 +78,11 @@ public class Ant extends GameObj {
         // Compute Pheromons
         //[>-------------------
 
+        sensorUp.reSumOfPheromons(pickedUpFood >= maxFoodCapacity ? PheromonType.HOME_PATH : PheromonType.FOOD_PATH);
+        sensorLeft.reSumOfPheromons(pickedUpFood >= maxFoodCapacity ? PheromonType.HOME_PATH : PheromonType.FOOD_PATH);
+        sensorRight.reSumOfPheromons(pickedUpFood >= maxFoodCapacity ? PheromonType.HOME_PATH : PheromonType.FOOD_PATH);
+
         if (target == null) {
-            sensorUp.rePosition();
-            sensorLeft.rePosition();
-            sensorRight.rePosition();
-
-            sensorUp.reSumOfPheromons(pickedUpFood >= maxFoodCapacity ? PheromonType.HOME_PATH : PheromonType.FOOD_PATH);
-            sensorLeft.reSumOfPheromons(pickedUpFood >= maxFoodCapacity ? PheromonType.HOME_PATH : PheromonType.FOOD_PATH);
-            sensorRight.reSumOfPheromons(pickedUpFood >= maxFoodCapacity ? PheromonType.HOME_PATH : PheromonType.FOOD_PATH);
-
             if (sensorLeft.getSum() > sensorUp.getSum() && sensorLeft.getSum() > sensorRight.getSum()) {
                 goalDir += -Variables.Ant.PHEROMON_TURNING_SPEED * (-Math.pow(sensorUp.getSum() / sensorLeft.getSum(), 2) + 1);
             } else if (sensorRight.getSum() > sensorUp.getSum()) {
@@ -141,34 +137,28 @@ public class Ant extends GameObj {
     }
 
     private void handleBorders() {
-        for (int i = 0; i < Map.Structure.borders.length; i += 2) {
 
-            Vector2 point = new Vector2();
-            Intersector.nearestSegmentPoint(Map.Structure.borders[i], Map.Structure.borders[i + 1], location, point);
+        RayCast forwardCast = Map.Structure.borderRayCaster.cast(new Vec2(location.x, location.y), new Vec2(MathUtils.cosDeg(dir), MathUtils.sinDeg(dir)));
+        RayCast leftCast = Map.Structure.borderRayCaster.cast(new Vec2(location.x, location.y), new Vec2(MathUtils.cosDeg(dir - 30), MathUtils.sinDeg(dir - 30)));
+        RayCast rightCast = Map.Structure.borderRayCaster.cast(new Vec2(location.x, location.y), new Vec2(MathUtils.cosDeg(dir + 30), MathUtils.sinDeg(dir + 30)));
 
-            float distance = point.dst(location);
+        float maxRotation = 10f;
 
-            if (distance > 5f) continue;
+        if (forwardCast.distance() > Variables.Ant.VIEWING_DISTANCE && leftCast.distance() > Variables.Ant.VIEWING_DISTANCE && rightCast.distance() > Variables.Ant.VIEWING_DISTANCE)
+            return;
 
-            Vector2 normalBorderVector = new Vector2(Map.Structure.borders[i]).sub(Map.Structure.borders[i + 1]).nor();
-            float borderAngle = normalBorderVector.angleDeg();
-            float away = (180 + (borderAngle - dir + 180) + borderAngle) % 360;
+        if (forwardCast.distance() < leftCast.distance() && forwardCast.distance() < rightCast.distance()) {
+            goalDir = dir + 180;
 
-            if (Maths.isPointInFOV(point, location, dir, Variables.Ant.VIEWiNG_ANGLE / 2f) && Math.abs(normalBorderVector.dot(MathUtils.cosDeg(away), MathUtils.sinDeg(away))) < Math.abs(normalBorderVector.dot(MathUtils.cosDeg(goalDir), MathUtils.sinDeg(goalDir)))) {
-                goalDir = away;
-            }
-
-            if (distance < 1f) {
-                goalDir = away;
-                dir = away;
-                location.add((MathUtils.cosDeg(dir)) * speed, (MathUtils.sinDeg(dir) * speed));
-            }
-
-            if (distance < 0.2) {
-                //fixme ....
-                colony.removeAnt(this);
-                System.out.println("rip Ant");
-            }
+            if (forwardCast.distance() < 0.5) dir = goalDir;
+        } else if (leftCast.distance() < rightCast.distance()) {
+            //wall is left
+            goalDir += maxRotation * (1 / (leftCast.distance() + 1));
+            if (leftCast.distance() < 0.5) dir = goalDir;
+        } else {
+            //wall is right
+            goalDir -= maxRotation * (1 / (rightCast.distance()) + 1);
+            if (rightCast.distance() < 0.5) dir = goalDir;
         }
     }
 

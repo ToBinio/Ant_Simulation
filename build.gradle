@@ -58,6 +58,7 @@ project(":core") {
     dependencies {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         implementation "at.tobinio:timer:0.3"
-        implementation "at.tobinio:find-neighbors:0.22"
+        implementation 'com.github.ToBinio:find-neighbors:0.22'
+        implementation 'at.tobinio:raycaster2d:0.2'
     }
 }

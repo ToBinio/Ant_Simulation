@@ -5,7 +5,10 @@ import at.tobinio.Variables;
 import at.tobinio.gameObj.Food;
 import at.tobinio.gameObj.GameObj;
 import at.tobinio.gameObj.ant.Ant;
+import at.tobinio.ray.rayCaster.RayCaster;
+import at.tobinio.ray.rayCatcher.RayCatcherLine;
 import at.tobinio.spacialHashmap.SpacialHashmap;
+import at.tobinio.util.Vec2;
 import at.tobinio.utils.Maths;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -18,8 +21,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created: 18.06.2022
@@ -90,10 +93,9 @@ public class Map {
                 food.renderer(shapeRenderer);
             }
 
-            if (Variables.Game.TOGGLE_RENDER_PHEROMONS)
-                for (Colony colony : colonies) {
-                    colony.renderPheromons(shapeRenderer);
-                }
+            if (Variables.Game.TOGGLE_RENDER_PHEROMONS) for (Colony colony : colonies) {
+                colony.renderPheromons(shapeRenderer);
+            }
 
             shapeRenderer.end();
 
@@ -222,6 +224,17 @@ public class Map {
 
             return sum;
         }
+
+        public static int getPheromonCount() {
+
+            int sum = 0;
+
+            for (Colony colony : colonies) {
+                sum += colony.getPheromonCount();
+            }
+
+            return sum;
+        }
     }
 
     public static class Structure {
@@ -231,7 +244,18 @@ public class Map {
 
         private static final TextureRegion textureRegion;
 
-        public static Vector2[] borders;
+        public static Line[] borders;
+        public static RayCaster borderRayCaster;
+
+        private static class Line {
+            public Vector2 pointA;
+            public Vector2 pointB;
+
+            public Line(Vector2 pointA, Vector2 pointB) {
+                this.pointA = pointA;
+                this.pointB = pointB;
+            }
+        }
 
         private static class Cell {
             public enum StructureType {
@@ -399,6 +423,8 @@ public class Map {
             // Fill small Rooms
             //[>-------------------
 
+            System.out.println("room filler:");
+
             for (Room room : rooms) {
                 System.out.println(room.cellList.size());
 
@@ -427,7 +453,7 @@ public class Map {
 
         public static void bakeMarchingCubeMap() {
 
-            ArrayList<Vector2> borders = new ArrayList<>();
+            ArrayList<Line> borders = new ArrayList<>();
 
             for (int x = 0; x < marchingCubeMap.length; x++) {
                 for (int y = 0; y < marchingCubeMap[x].length; y++) {
@@ -435,11 +461,13 @@ public class Map {
 
                     marchingCubeMap[x][y] = marchingCube;
 
-                    borders.addAll(Arrays.asList(marchingCube.borders));
+                    for (int i = 0; i < marchingCube.borders.length; i += 2) {
+                        borders.add(new Line(marchingCube.borders[i], marchingCube.borders[i + 1]));
+                    }
                 }
             }
 
-            Map.Structure.borders = borders.toArray(new Vector2[0]);
+            Map.Structure.borders = borders.toArray(new Line[0]);
         }
 
         public static boolean isValidSpawnLocation(float x, float y) {
@@ -457,6 +485,89 @@ public class Map {
 
             return new Vector2(x, y);
         }
+
+        public static void optimizeBorder() {
+
+            System.out.println("border optimizer:");
+
+            int before;
+            do {
+                before = borders.length;
+
+                List<Line> newBorders = new ArrayList<>();
+                List<Line> usedLines = new ArrayList<>();
+
+                for (Line border : borders) {
+                    optimizeBorderLine(border, newBorders, usedLines);
+                }
+
+                borders = newBorders.toArray(new Line[]{});
+                System.out.println(before + " ->" + borders.length);
+
+            } while (before != borders.length);
+        }
+
+        private static void optimizeBorderLine(Line border, List<Line> newBorders, List<Line> usedLines) {
+            if (usedLines.contains(border)) return;
+
+            for (Line newBorder : newBorders) {
+                if (border.pointB.equals(newBorder.pointA)) {
+                    Vector2 dir1 = new Vector2(border.pointA).sub(border.pointB).nor();
+                    Vector2 dir2 = new Vector2(newBorder.pointA).sub(newBorder.pointB).nor();
+
+                    if (Math.abs(dir1.x - dir2.x) < 0.1 && Math.abs(dir1.y - dir2.y) < 0.1) {
+                        newBorders.remove(newBorder);
+                        newBorders.add(new Line(border.pointA, newBorder.pointB));
+                        usedLines.add(border);
+
+                        return;
+                    }
+                }
+            }
+
+            for (Line currentBorder : borders) {
+                if (border.pointB.equals(currentBorder.pointA)) {
+
+                    Vector2 dir1 = new Vector2(border.pointA).sub(border.pointB).nor();
+                    Vector2 dir2 = new Vector2(currentBorder.pointA).sub(currentBorder.pointB).nor();
+
+                    if (Math.abs(dir1.x - dir2.x) < 0.1 && Math.abs(dir1.y - dir2.y) < 0.1) {
+
+                        Line line = new Line(border.pointA, currentBorder.pointB);
+
+                        newBorders.add(line);
+
+                        usedLines.add(border);
+                        usedLines.add(currentBorder);
+
+                        return;
+                    }
+                }
+            }
+
+            newBorders.add(border);
+            usedLines.add(border);
+        }
+
+        public static void bakeBorderRayCaster() {
+            borderRayCaster = new RayCaster();
+
+            for (Line border : borders) {
+                borderRayCaster.addRayCaster(new RayCatcherLine(new Vec2(border.pointA.x, border.pointA.y), new Vec2(border.pointB.x, border.pointB.y)));
+            }
+        }
+
+        public static void renderBorder(ShapeRenderer shapeRenderer) {
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            for (Line border : borders) {
+                Random random = new Random((long) (border.pointA.y * border.pointA.x));
+
+                shapeRenderer.setColor(new Color(random.nextFloat(), random.nextFloat(), random.nextFloat(), 1));
+                shapeRenderer.line(border.pointA, border.pointB);
+                shapeRenderer.circle(border.pointA.x, border.pointA.y, 1);
+            }
+            shapeRenderer.end();
+        }
     }
 
     public static void update() {
@@ -467,5 +578,6 @@ public class Map {
             PolygonSpriteBatch polygonSpriteBatch) {
         GameObjs.render(spriteBatch, shapeRenderer, antSprite);
         Structure.render(polygonSpriteBatch);
+//        Structure.renderBorder(shapeRenderer);
     }
 }

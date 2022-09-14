@@ -54,6 +54,8 @@ public class Main extends ApplicationAdapter {
 
         Map.Structure.compute();
         Map.Structure.bakeMarchingCubeMap();
+        Map.Structure.optimizeBorder();
+        Map.Structure.bakeBorderRayCaster();
 
         for (int i = 0; i < 3; i++) {
             Colony colony = new Colony();
@@ -100,9 +102,8 @@ public class Main extends ApplicationAdapter {
         spriteBatch.begin();
         font.draw(spriteBatch, "Fps: " + Gdx.graphics.getFramesPerSecond(), -800, 450);
         font.draw(spriteBatch, "Ants: " + Map.GameObjs.getAntCount(), -800, 430);
+        font.draw(spriteBatch, "Food Pheromons: " + Map.GameObjs.getPheromonCount(), -800, 410);
         spriteBatch.end();
-
-
     }
 
     @Override

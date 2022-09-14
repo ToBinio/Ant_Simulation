@@ -99,7 +99,6 @@ public class Colony {
         ants.addAll(antsToAdd);
         antsToAdd.clear();
 
-
         for (Pheromon pheromon : pheromonsToRemove) {
             if (pheromon.type == PheromonType.FOOD_PATH) {
                 foodPheromons.remove(pheromon);
@@ -227,5 +226,9 @@ public class Colony {
 
     public int getAntCount() {
         return ants.size();
+    }
+
+    public int getPheromonCount() {
+        return foodPheromons.size();
     }
 }

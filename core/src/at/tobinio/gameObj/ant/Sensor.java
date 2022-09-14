@@ -33,6 +33,7 @@ public class Sensor extends GameObj {
     }
 
     public void reSumOfPheromons(PheromonType pheromonType) {
+        rePosition();
         sum = ant.getColony().sumOfPheromons(pheromonType, location.x, location.y, Variables.Ant.Sensor.RANGE);
     }
 

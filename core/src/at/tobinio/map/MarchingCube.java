@@ -54,7 +54,7 @@ public class MarchingCube {
         return switch (id) {
             // 1 points:
             case 1 ->
-                    new Points[][]{{Points.centreBottom, Points.bottomLeft, Points.centreLeft}, {Points.centreBottom, Points.centreLeft}};
+                    new Points[][]{{Points.centreBottom, Points.bottomLeft, Points.centreLeft}, {Points.centreLeft, Points.centreBottom}};
             case 2 ->
                     new Points[][]{{Points.centreRight, Points.bottomRight, Points.centreBottom}, {Points.centreRight, Points.centreBottom}};
             case 4 ->
@@ -74,7 +74,7 @@ public class MarchingCube {
             case 5 ->
                     new Points[][]{{Points.centreTop, Points.topRight, Points.centreRight, Points.centreBottom, Points.bottomLeft, Points.centreLeft}, {Points.centreTop, Points.centreLeft, Points.centreRight, Points.centreBottom}};
             case 10 ->
-                    new Points[][]{{Points.topLeft, Points.centreTop, Points.centreRight, Points.bottomRight, Points.centreBottom, Points.centreLeft}, {Points.centreTop, Points.centreRight, Points.centreLeft, Points.centreBottom}};
+                    new Points[][]{{Points.topLeft, Points.centreTop, Points.centreRight, Points.bottomRight, Points.centreBottom, Points.centreLeft}, {Points.centreRight, Points.centreTop, Points.centreBottom, Points.centreLeft}};
 
             // 3 point:
             case 7 ->
@@ -84,7 +84,7 @@ public class MarchingCube {
             case 13 ->
                     new Points[][]{{Points.topLeft, Points.topRight, Points.centreRight, Points.centreBottom, Points.bottomLeft}, {Points.centreRight, Points.centreBottom}};
             case 14 ->
-                    new Points[][]{{Points.topLeft, Points.topRight, Points.bottomRight, Points.centreBottom, Points.centreLeft}, {Points.centreBottom, Points.centreLeft}};
+                    new Points[][]{{Points.topLeft, Points.topRight, Points.bottomRight, Points.centreBottom, Points.centreLeft}, {Points.centreLeft, Points.centreBottom}};
 
             // 4 point:
             case 15 -> new Points[][]{{Points.topLeft, Points.topRight, Points.bottomRight, Points.bottomLeft}, {}};
