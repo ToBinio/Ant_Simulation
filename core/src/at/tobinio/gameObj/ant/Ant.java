@@ -3,7 +3,6 @@ package at.tobinio.gameObj.ant;
 import at.tobinio.Variables;
 import at.tobinio.gameObj.Food;
 import at.tobinio.gameObj.GameObj;
-import at.tobinio.gameObj.ant.pheromon.Pheromon;
 import at.tobinio.gameObj.ant.pheromon.PheromonType;
 import at.tobinio.map.Colony;
 import at.tobinio.map.Map;
@@ -131,7 +130,7 @@ public class Ant extends GameObj {
             float strength = (float) pheromonsToSpawnCount / Variables.Ant.PHEROMON_MAX_TO_SPAWN;
 
             if (strength > 0.1)
-                colony.addPheromon(new Pheromon(location.x, location.y, pickedUpFood >= maxFoodCapacity ? PheromonType.FOOD_PATH : PheromonType.HOME_PATH, strength));
+                colony.pheromonMap.setPheromon(location.x, location.y, pickedUpFood >= maxFoodCapacity ? PheromonType.FOOD_PATH : PheromonType.HOME_PATH, strength);
         }
     }
 

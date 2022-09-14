@@ -93,7 +93,7 @@ public class Map {
             }
 
             if (Variables.Game.TOGGLE_RENDER_PHEROMONS) for (Colony colony : colonies) {
-                colony.renderPheromons(shapeRenderer);
+                colony.pheromonMap.render(shapeRenderer);
             }
 
             shapeRenderer.end();
@@ -219,17 +219,6 @@ public class Map {
 
             for (Colony colony : colonies) {
                 sum += colony.getAntCount();
-            }
-
-            return sum;
-        }
-
-        public static int getPheromonCount() {
-
-            int sum = 0;
-
-            for (Colony colony : colonies) {
-                sum += colony.getPheromonCount();
             }
 
             return sum;
