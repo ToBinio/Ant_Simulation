@@ -9,8 +9,8 @@ package at.tobinio;
 public class Variables {
     public static class Game {
 
-        public static final int WIDTH = 700;
-        public static final int HEIGHT = 700;
+        public static final int WIDTH = 1200;
+        public static final int HEIGHT = 1200;
 
         public static boolean TOGGLE_RENDER_PHEROMONS = false;
         public static boolean TOGGLE_RENDER_ANT_FOV = false;
@@ -19,7 +19,7 @@ public class Variables {
 
     public static class Map {
 
-        public static final int CELL_SIZE = 10;
+        public static final int CELL_SIZE = 12;
     }
 
     public static class Nest {

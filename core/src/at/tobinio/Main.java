@@ -57,16 +57,16 @@ public class Main extends ApplicationAdapter {
         Map.Structure.optimizeBorder();
         Map.Structure.bakeBorderRayCaster();
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 5; i++) {
             Colony colony = new Colony();
             Map.GameObjs.addColony(colony);
 
-            for (int j = 0; j < 100; j++) {
+            for (int j = 0; j < 50; j++) {
                 colony.spawnAnt();
             }
         }
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 20; i++) {
             Map.GameObjs.spawnRandomFoodCluster();
         }
     }

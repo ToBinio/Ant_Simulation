@@ -8,7 +8,6 @@ import at.tobinio.gameObj.ant.pheromon.PheromonType;
 import at.tobinio.map.Colony;
 import at.tobinio.map.Map;
 import at.tobinio.ray.RayCast;
-import at.tobinio.util.Vec2;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -138,9 +137,9 @@ public class Ant extends GameObj {
 
     private void handleBorders() {
 
-        RayCast forwardCast = Map.Structure.borderRayCaster.cast(new Vec2(location.x, location.y), new Vec2(MathUtils.cosDeg(dir), MathUtils.sinDeg(dir)));
-        RayCast leftCast = Map.Structure.borderRayCaster.cast(new Vec2(location.x, location.y), new Vec2(MathUtils.cosDeg(dir - 30), MathUtils.sinDeg(dir - 30)));
-        RayCast rightCast = Map.Structure.borderRayCaster.cast(new Vec2(location.x, location.y), new Vec2(MathUtils.cosDeg(dir + 30), MathUtils.sinDeg(dir + 30)));
+        RayCast forwardCast = Map.Structure.borderRayCaster.cast(location.x, location.y, MathUtils.cosDeg(dir), MathUtils.sinDeg(dir));
+        RayCast leftCast = Map.Structure.borderRayCaster.cast(location.x, location.y, MathUtils.cosDeg(dir - 30), MathUtils.sinDeg(dir - 30));
+        RayCast rightCast = Map.Structure.borderRayCaster.cast(location.x, location.y, MathUtils.cosDeg(dir + 30), MathUtils.sinDeg(dir + 30));
 
         float maxRotation = 10f;
 

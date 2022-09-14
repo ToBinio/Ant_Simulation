@@ -8,7 +8,6 @@ import at.tobinio.gameObj.ant.Ant;
 import at.tobinio.ray.rayCaster.RayCaster;
 import at.tobinio.ray.rayCatcher.RayCatcherLine;
 import at.tobinio.spacialHashmap.SpacialHashmap;
-import at.tobinio.util.Vec2;
 import at.tobinio.utils.Maths;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -338,7 +337,7 @@ public class Map {
             for (int x = 0; x < cellMap.length; x++) {
                 for (int y = 0; y < cellMap[x].length; y++) {
 
-                    if (x < 2 || y < 2 || x >= cellMap.length - 2 || y >= cellMap[0].length - 2) {
+                    if (x < 5 || y < 5 || x >= cellMap.length - 5 || y >= cellMap[0].length - 5) {
                         cellMap[x][y].type = Cell.StructureType.STONE;
                     } else {
                         cellMap[x][y].type = Math.random() > 0.46 ? Cell.StructureType.AIR : Cell.StructureType.STONE;
@@ -370,7 +369,6 @@ public class Map {
                 for (int i = 0; i < copyMap[x].length; i++) {
                     copyMap[x][i] = cellMap[x][i].copy();
                 }
-                System.arraycopy(cellMap[x], 0, copyMap[x], 0, copyMap[x].length);
             }
 
             return copyMap;
@@ -553,8 +551,10 @@ public class Map {
             borderRayCaster = new RayCaster();
 
             for (Line border : borders) {
-                borderRayCaster.addRayCaster(new RayCatcherLine(new Vec2(border.pointA.x, border.pointA.y), new Vec2(border.pointB.x, border.pointB.y)));
+                borderRayCaster.addRayCaster(new RayCatcherLine(border.pointA.x, border.pointA.y, border.pointB.x, border.pointB.y));
             }
+
+            borderRayCaster.bake();
         }
 
         public static void renderBorder(ShapeRenderer shapeRenderer) {
